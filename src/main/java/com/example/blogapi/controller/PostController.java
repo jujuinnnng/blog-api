@@ -16,18 +16,8 @@ import java.util.Map;
 public class PostController {
 
     @PostMapping("/posts")
-    public  Map<String, String> post(@RequestBody @Valid PostCreate params, BindingResult result)  {
-        log.info("params={}", params.toString());
-        if(result.hasErrors()){
-            List<FieldError> fieldErrors = result.getFieldErrors();
-            FieldError fristFieldError = fieldErrors.get(0);
-            String fieldName = fristFieldError.getField(); // title
-            String errorMessage = fristFieldError.getDefaultMessage(); //에러메세지
+    public  Map<String, String> post(@RequestBody @Valid PostCreate params)  {
 
-            Map<String, String> error = new HashMap<>();
-            error.put(fieldName, errorMessage);
-            return error;
-        }
         return Map.of();
     }
 }
