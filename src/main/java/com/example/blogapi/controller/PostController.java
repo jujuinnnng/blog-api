@@ -16,7 +16,7 @@ import java.util.Map;
 public class PostController {
 
     @PostMapping("/posts")
-    public  Map<String, String> post(@RequestBody @Valid PostCreate params)  {
+    public  Map<String, String> post(@RequestBody @Valid PostCreate request)  {
 
         return Map.of();
     }
