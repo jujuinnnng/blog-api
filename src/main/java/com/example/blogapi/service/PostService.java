@@ -14,6 +14,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     public void write(PostCreate postCreate){
-        Post post = new Post();
+        Post post = new Post(postCreate.getTitle(), postCreate.getContent());
+        postRepository.save(post);
     }
 }
