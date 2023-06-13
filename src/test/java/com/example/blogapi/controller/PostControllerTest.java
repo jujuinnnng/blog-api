@@ -66,9 +66,17 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청 시 title값은 필수다.")
     void test2() throws Exception {
+        //given
+        PostCreate request = PostCreate.builder()
+                .content("글내용")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
+        // expected
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                         .contentType(APPLICATION_JSON)
-                        .content("{\"title\": null, \"content\": \"글내용\"}")
+                        .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("400"))
@@ -80,10 +88,18 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청 시 DB에 값이 저장된다.")
     void test3() throws Exception {
+        //given
+        PostCreate request = PostCreate.builder()
+                .title("제목")
+                .content("글내용")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
         //when
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
                         .contentType(APPLICATION_JSON)
-                        .content("{\"title\": \"제목\", \"content\": \"글내용\"}")
+                        .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
