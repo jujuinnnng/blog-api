@@ -2,6 +2,8 @@ package com.example.blogapi.controller;
 
 import com.example.blogapi.domain.Post;
 import com.example.blogapi.repository.PostRepository;
+import com.example.blogapi.request.PostCreate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,12 +19,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 
 @AutoConfigureMockMvc
 @SpringBootTest
 
 class PostControllerTest {
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private MockMvc mockMvc;
@@ -38,9 +44,19 @@ class PostControllerTest {
     @Test
     @DisplayName("/posts 요청 시 hello world를 출력한다.")
     void test() throws Exception {
+        //given
+        PostCreate request = PostCreate.builder()
+                .title("제목")
+                .content("글내용")
+                .build();
+
+        String json = objectMapper.writeValueAsString(request);
+
+        System.out.println(json);
+        // expected
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"title\": \"제목\", \"content\": \"글내용\"}")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("{}"))
@@ -51,7 +67,7 @@ class PostControllerTest {
     @DisplayName("/posts 요청 시 title값은 필수다.")
     void test2() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
                         .content("{\"title\": null, \"content\": \"글내용\"}")
                 )
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -66,7 +82,7 @@ class PostControllerTest {
     void test3() throws Exception {
         //when
         mockMvc.perform(MockMvcRequestBuilders.post("/posts")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
                         .content("{\"title\": \"제목\", \"content\": \"글내용\"}")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
