@@ -42,8 +42,8 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("/posts 요청 시 hello world를 출력한다.")
-    void test() throws Exception {
+    @DisplayName("/제목 글내용 데이터 확인")
+    void testPostCreate() throws Exception {
         //given
         PostCreate request = PostCreate.builder()
                 .title("제목")
@@ -59,13 +59,13 @@ class PostControllerTest {
                         .content(json)
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("{}"))
+                .andExpect(MockMvcResultMatchers.content().string(""))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     @DisplayName("/posts 요청 시 title값은 필수다.")
-    void test2() throws Exception {
+    void testNoTitle() throws Exception {
         //given
         PostCreate request = PostCreate.builder()
                 .content("글내용")
@@ -87,7 +87,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("/posts 요청 시 DB에 값이 저장된다.")
-    void test3() throws Exception {
+    void testBoardInquiry() throws Exception {
         //given
         PostCreate request = PostCreate.builder()
                 .title("제목")
