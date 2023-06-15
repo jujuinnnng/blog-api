@@ -4,6 +4,7 @@ import com.example.blogapi.domain.Post;
 import com.example.blogapi.repository.PostRepository;
 import com.example.blogapi.request.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -109,7 +110,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("타이틀 값 10자 제한 기능 test")
+    @DisplayName("글 단건 조회 및 타이틀 값 10자 제한 기능 test")
     void testBoardInquiry() throws Exception {
         //given
         Post requestPost = Post.builder()
@@ -125,6 +126,34 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(requestPost.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("1234567890"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("con"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("글 다건 조회")
+    void testBoardListInquiry() throws Exception {
+        //given
+        Post requestPost1 = postRepository.save(Post.builder()
+                .title("ti1")
+                .content("con1")
+                .build());
+
+        Post requestPost2 = postRepository.save(Post.builder()
+                .title("ti2")
+                .content("con2")
+                .build());
+
+        //expected(when+then)
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .contentType(APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(requestPost1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("ti1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("con1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(requestPost2.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].title").value("ti2"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].content").value("con2"))
                 .andDo(MockMvcResultHandlers.print());
     }
 }

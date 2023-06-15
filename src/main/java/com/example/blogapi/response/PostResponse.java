@@ -1,5 +1,6 @@
 package com.example.blogapi.response;
 
+import com.example.blogapi.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,5 +16,12 @@ public class PostResponse {
         this.id = id;
         this.title = title.substring(0,Math.min(title.length(),10));
         this.content = content;
+    }
+
+    //생성자 오버로딩
+    public PostResponse(Post post) {
+        this.id = post.getId();
+        this.title = post.getTitle();
+        this.content = post.getContent();
     }
 }

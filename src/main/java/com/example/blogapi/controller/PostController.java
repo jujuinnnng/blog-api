@@ -6,14 +6,10 @@ import com.example.blogapi.response.PostResponse;
 import com.example.blogapi.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -27,10 +23,13 @@ public class PostController {
         postService.write(request);
     }
 
-    @GetMapping("posts/{postId}")
-    public PostResponse board(@PathVariable(name = "postId") Long id){
-        PostResponse postResponse = postService.board(id);
-        return postResponse;
+    @GetMapping("/posts/{postId}")
+    public PostResponse getBoard(@PathVariable Long postId){
+        return postService.getBoard(postId);
     }
 
+    @GetMapping("/posts")
+    public List<PostResponse> getBoardList(){
+        return postService.getBoardList();
+    }
 }
