@@ -2,6 +2,7 @@ package com.example.blogapi.controller;
 
 import com.example.blogapi.domain.Post;
 import com.example.blogapi.request.PostCreate;
+import com.example.blogapi.response.PostResponse;
 import com.example.blogapi.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +28,9 @@ public class PostController {
     }
 
     @GetMapping("posts/{postId}")
-    public Post board(@PathVariable(name = "postId") Long id){
-        Post post = postService.board(id);
-        return post;
+    public PostResponse board(@PathVariable(name = "postId") Long id){
+        PostResponse postResponse = postService.board(id);
+        return postResponse;
     }
 
 }

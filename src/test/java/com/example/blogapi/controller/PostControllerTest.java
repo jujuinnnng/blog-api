@@ -10,17 +10,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -87,7 +83,7 @@ class PostControllerTest {
 
     @Test
     @DisplayName("/posts 요청 시 DB에 값이 저장된다.")
-    void testBoardInquiry() throws Exception {
+    void testBoardSave() throws Exception {
         //given
         PostCreate request = PostCreate.builder()
                 .title("제목")
@@ -110,5 +106,25 @@ class PostControllerTest {
         Post post = postRepository.findAll().get(0);
         Assertions.assertEquals("제목", post.getTitle());
         Assertions.assertEquals("글내용", post.getContent());
+    }
+
+    @Test
+    @DisplayName("타이틀 값 10자 제한 기능 test")
+    void testBoardInquiry() throws Exception {
+        //given
+        Post requestPost = Post.builder()
+                .title("123456789012345")
+                .content("con")
+                .build();
+        postRepository.save(requestPost);
+
+        //expected(when+then)
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}", requestPost.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(requestPost.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("1234567890"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content").value("con"))
+                .andDo(MockMvcResultHandlers.print());
     }
 }

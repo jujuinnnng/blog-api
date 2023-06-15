@@ -3,7 +3,9 @@ package com.example.blogapi.service;
 import com.example.blogapi.domain.Post;
 import com.example.blogapi.repository.PostRepository;
 import com.example.blogapi.request.PostCreate;
+import com.example.blogapi.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,11 @@ class PostServiceTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @BeforeEach
+    void clean(){
+        postRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("글 작성")
@@ -45,18 +52,16 @@ class PostServiceTest {
     void testBoardInquiry() {
         //given
         Post requestPost = Post.builder()
-                .title("ti")
+                .title("123456789012345")
                 .content("con")
                 .build();
         postRepository.save(requestPost);
 
         //when
-        Post post = postService.board(requestPost.getId());
+        PostResponse postResponse = postService.board(requestPost.getId());
 
-        Assertions.assertNotNull(post);
-        Assertions.assertEquals("ti", post.getTitle());
-        Assertions.assertEquals("con", post.getContent());
-
+        Assertions.assertNotNull(postResponse);
+        Assertions.assertEquals("123456789012345", postResponse.getTitle());
+        Assertions.assertEquals("con", postResponse.getContent());
     }
-
 }
