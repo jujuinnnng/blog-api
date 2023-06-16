@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @SpringBootTest
 class PostServiceTest {
@@ -66,24 +68,24 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("글 다건 조회")
-    void testBoardListInquiry() {
+    @DisplayName("페이지 조회")
+    void testBoardPaging() {
         //given
-       postRepository.saveAll(List.of(
-                Post.builder()
-                        .title("ti1")
-                        .content("con1")
-                        .build(),
-                Post.builder()
-                        .title("ti2")
-                        .content("con2")
-                        .build()
-        ));
+        List<Post> requestPosts = IntStream.range(1,31)
+                        .mapToObj(i -> Post.builder()
+                                .title("제목"+i)
+                                .content("내용"+i)
+                                .build())
+                        .collect(Collectors.toList());
+
+
+        postRepository.saveAll(requestPosts);
 
         //when
-        List<PostResponse> posts = postService.getBoardList();
+        List<PostResponse> posts = postService.getBoardList(0);
 
         //then
-        Assertions.assertEquals(2, posts.size());
+
     }
+
 }

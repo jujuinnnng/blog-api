@@ -6,6 +6,8 @@ import com.example.blogapi.request.PostCreate;
 import com.example.blogapi.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,13 +37,13 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .build();
-
-
     }
 
-    public List<PostResponse> getBoardList() {
-        return postRepository.findAll().stream()
+    public List<PostResponse> getBoardList(int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+        return postRepository.findAll(pageable).stream()
                 .map(post -> new PostResponse(post))
                 .collect(Collectors.toList());
     }
+
 }
