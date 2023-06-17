@@ -17,6 +17,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @AutoConfigureMockMvc
@@ -51,7 +55,7 @@ class PostControllerTest {
 
         System.out.println(json);
         // expected
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(MockMvcRequestBuilders.post("/post")
                         .contentType(APPLICATION_JSON)
                         .content(json)
                 )
@@ -61,7 +65,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("/posts 요청 시 title값은 필수다.")
+    @DisplayName("/post 요청 시 title값은 필수다.")
     void testNoTitle() throws Exception {
         //given
         PostCreate request = PostCreate.builder()
@@ -71,7 +75,7 @@ class PostControllerTest {
         String json = objectMapper.writeValueAsString(request);
 
         // expected
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(MockMvcRequestBuilders.post("/post")
                         .contentType(APPLICATION_JSON)
                         .content(json)
                 )
@@ -83,7 +87,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("/posts 요청 시 DB에 값이 저장된다.")
+    @DisplayName("/post 요청 시 DB에 값이 저장된다.")
     void testBoardSave() throws Exception {
         //given
         PostCreate request = PostCreate.builder()
@@ -94,7 +98,7 @@ class PostControllerTest {
         String json = objectMapper.writeValueAsString(request);
 
         //when
-        mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        mockMvc.perform(MockMvcRequestBuilders.post("/post")
                         .contentType(APPLICATION_JSON)
                         .content(json)
                 )
@@ -120,7 +124,7 @@ class PostControllerTest {
         postRepository.save(requestPost);
 
         //expected(when+then)
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}", requestPost.getId())
+        mockMvc.perform(MockMvcRequestBuilders.get("/post/{postId}", requestPost.getId())
                         .contentType(APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(requestPost.getId()))
@@ -130,30 +134,22 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 다건 조회")
+    @DisplayName("페이지 조회")
     void testBoardListInquiry() throws Exception {
         //given
-        Post requestPost1 = postRepository.save(Post.builder()
-                .title("ti1")
-                .content("con1")
-                .build());
+        List<Post> requestPosts = IntStream.range(1,31)
+                .mapToObj(i -> Post.builder()
+                        .title("제목"+i)
+                        .content("내용"+i)
+                        .build())
+                .collect(Collectors.toList());
 
-        Post requestPost2 = postRepository.save(Post.builder()
-                .title("ti2")
-                .content("con2")
-                .build());
+        postRepository.saveAll(requestPosts);
 
         //expected(when+then)
-        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+        mockMvc.perform(MockMvcRequestBuilders.get("/post?page=1&sort=id,desc")
                         .contentType(APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(requestPost1.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("ti1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("con1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(requestPost2.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].title").value("ti2"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].content").value("con2"))
                 .andDo(MockMvcResultHandlers.print());
     }
 }

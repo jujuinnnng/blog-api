@@ -10,10 +10,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PostServiceTest {
@@ -42,11 +48,11 @@ class PostServiceTest {
         postService.write(postCreate);
 
         //then
-        Assertions.assertEquals(1, postRepository.count());
+        assertEquals(1, postRepository.count());
 
         Post post = postRepository.findAll().get(0);
-        Assertions.assertEquals("제목", post.getTitle());
-        Assertions.assertEquals("글내용", post.getContent());
+        assertEquals("제목", post.getTitle());
+        assertEquals("글내용", post.getContent());
     }
 
     @Test
@@ -63,8 +69,8 @@ class PostServiceTest {
         PostResponse postResponse = postService.getBoard(requestPost.getId());
 
         Assertions.assertNotNull(postResponse);
-        Assertions.assertEquals("1234567890", postResponse.getTitle());
-        Assertions.assertEquals("con", postResponse.getContent());
+        assertEquals("1234567890", postResponse.getTitle());
+        assertEquals("con", postResponse.getContent());
     }
 
     @Test
@@ -78,14 +84,15 @@ class PostServiceTest {
                                 .build())
                         .collect(Collectors.toList());
 
-
         postRepository.saveAll(requestPosts);
 
+        Pageable pageable = PageRequest.of(0,5, Direction.DESC, "id");
+
         //when
-        List<PostResponse> posts = postService.getBoardList(0);
+        List<PostResponse> posts = postService.getBoardList(pageable);
 
         //then
-
+        assertEquals(5L, posts.size());
+        assertEquals("제목30", posts.get(0).getTitle()); //서비스에 내림차순으로 설정
     }
-
 }

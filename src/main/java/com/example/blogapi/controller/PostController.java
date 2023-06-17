@@ -6,6 +6,8 @@ import com.example.blogapi.response.PostResponse;
 import com.example.blogapi.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,18 +20,18 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping("/posts")
+    @PostMapping("/post")
     public void post(@RequestBody @Valid PostCreate request)  {
         postService.write(request);
     }
 
-    @GetMapping("/posts/{postId}")
+    @GetMapping("/post/{postId}")
     public PostResponse getBoard(@PathVariable Long postId){
         return postService.getBoard(postId);
     }
 
-    @GetMapping("/posts")
-    public List<PostResponse> getBoardList(){
-        return postService.getBoardList(1);
+    @GetMapping("/post")
+    public List<PostResponse> getBoardList(Pageable pageable){
+        return postService.getBoardList(pageable);
     }
 }
