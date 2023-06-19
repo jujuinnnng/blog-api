@@ -134,10 +134,10 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("페이지 조회")
+    @DisplayName("페이지 조회(페이지를 0으로 요청하면 첫 페이지를 가져온다.)")
     void testBoardListInquiry() throws Exception {
         //given
-        List<Post> requestPosts = IntStream.range(1,31)
+        List<Post> requestPosts = IntStream.range(0, 20)
                 .mapToObj(i -> Post.builder()
                         .title("제목"+i)
                         .content("내용"+i)
@@ -147,9 +147,11 @@ class PostControllerTest {
         postRepository.saveAll(requestPosts);
 
         //expected(when+then)
-        mockMvc.perform(MockMvcRequestBuilders.get("/post?page=1&sort=id,desc")
+        mockMvc.perform(MockMvcRequestBuilders.get("/post?page=1&size=10")
                         .contentType(APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("제목19"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("내용19"))
                 .andDo(MockMvcResultHandlers.print());
     }
 }

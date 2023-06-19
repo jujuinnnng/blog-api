@@ -32,7 +32,7 @@ public class PostController {
     }
 
     @GetMapping("/post")
-    public List<PostResponse> getBoardList(@RequestParam PostSearch postSearch){
+    public List<PostResponse> getBoardList(@ModelAttribute PostSearch postSearch){
         return postService.getBoardList(postSearch);
     }
 }

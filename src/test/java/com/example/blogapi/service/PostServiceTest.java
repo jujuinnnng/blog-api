@@ -92,7 +92,6 @@ class PostServiceTest {
                 .size(10)
                 .build();
 
-
         //when
         List<PostResponse> posts = postService.getBoardList(postSearch);
 
