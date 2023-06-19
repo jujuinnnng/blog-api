@@ -3,6 +3,7 @@ package com.example.blogapi.service;
 import com.example.blogapi.domain.Post;
 import com.example.blogapi.repository.PostRepository;
 import com.example.blogapi.request.PostCreate;
+import com.example.blogapi.request.PostSearch;
 import com.example.blogapi.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,7 +78,7 @@ class PostServiceTest {
     @DisplayName("페이지 조회")
     void testBoardPaging() {
         //given
-        List<Post> requestPosts = IntStream.range(1,31)
+        List<Post> requestPosts = IntStream.range(0,20)
                         .mapToObj(i -> Post.builder()
                                 .title("제목"+i)
                                 .content("내용"+i)
@@ -86,13 +87,17 @@ class PostServiceTest {
 
         postRepository.saveAll(requestPosts);
 
-        Pageable pageable = PageRequest.of(0,5, Direction.DESC, "id");
+        PostSearch postSearch = PostSearch.builder()
+                .page(1)
+                .size(10)
+                .build();
+
 
         //when
-        List<PostResponse> posts = postService.getBoardList(pageable);
+        List<PostResponse> posts = postService.getBoardList(postSearch);
 
         //then
-        assertEquals(5L, posts.size());
-        assertEquals("제목30", posts.get(0).getTitle()); //서비스에 내림차순으로 설정
+        assertEquals(10L, posts.size());
+        assertEquals("제목19", posts.get(0).getTitle()); //서비스에 내림차순으로 설정
     }
 }

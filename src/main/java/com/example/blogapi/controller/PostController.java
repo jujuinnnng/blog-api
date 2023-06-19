@@ -2,6 +2,7 @@ package com.example.blogapi.controller;
 
 import com.example.blogapi.domain.Post;
 import com.example.blogapi.request.PostCreate;
+import com.example.blogapi.request.PostSearch;
 import com.example.blogapi.response.PostResponse;
 import com.example.blogapi.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class PostController {
     }
 
     @GetMapping("/post")
-    public List<PostResponse> getBoardList(Pageable pageable){
-        return postService.getBoardList(pageable);
+    public List<PostResponse> getBoardList(@RequestParam PostSearch postSearch){
+        return postService.getBoardList(postSearch);
     }
 }
