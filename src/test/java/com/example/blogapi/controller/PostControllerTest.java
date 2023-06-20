@@ -3,6 +3,8 @@ package com.example.blogapi.controller;
 import com.example.blogapi.domain.Post;
 import com.example.blogapi.repository.PostRepository;
 import com.example.blogapi.request.PostCreate;
+import com.example.blogapi.request.PostEdit;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -152,6 +154,30 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("제목19"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("내용19"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("글 제목 수정")
+    void testBoardModify() throws Exception {
+        //given
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용")
+                .build();
+
+        postRepository.save(post);
+
+        PostEdit postEdit = PostEdit.builder()
+                .title("제목수정")
+                .content("내용")
+                .build();
+
+        //expected(when+then)
+        mockMvc.perform(MockMvcRequestBuilders.patch("/post/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postEdit)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
     }
 }

@@ -2,6 +2,7 @@ package com.example.blogapi.controller;
 
 import com.example.blogapi.domain.Post;
 import com.example.blogapi.request.PostCreate;
+import com.example.blogapi.request.PostEdit;
 import com.example.blogapi.request.PostSearch;
 import com.example.blogapi.response.PostResponse;
 import com.example.blogapi.service.PostService;
@@ -35,4 +36,10 @@ public class PostController {
     public List<PostResponse> getBoardList(@ModelAttribute PostSearch postSearch){
         return postService.getBoardList(postSearch);
     }
+
+    @PatchMapping("/post/{postId}")
+    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request){
+        return postService.edit(postId, request);
+    }
+
 }
