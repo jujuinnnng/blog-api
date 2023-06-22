@@ -180,4 +180,24 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
     }
+
+    @Test
+    @DisplayName("글 삭제")
+    void testBoarDelete() throws Exception {
+        //given
+        Post post = Post.builder()
+                .title("제목")
+                .content("내용")
+                .build();
+
+        postRepository.save(post);
+
+        //expected
+        mockMvc.perform(MockMvcRequestBuilders.delete("/post/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+
+
+    }
 }
